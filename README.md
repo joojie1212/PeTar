@@ -497,7 +497,7 @@ petar -p input.par [options] [snapshot filename]
 ```
 Here, _input.par_ stores the previous parameter choices used in a simulation, automatically generated from the prior simulation. 
 
-It is possible to modify the options for resumed simulations in two ways. Users can either directly modify _input.par_ to adjust parameters before resuming or specify new parameters in `[options]` within the `petar` command mentioned earlier. It is crucial to place `[options]` after `-p input.par` to prevent them from being overwritten by the parameters stored in _input.par_. For instance, to update the end time of the simulation to 10 after resuming simulations from the snapshot file `data.5`, use the following command:
+It is possible to modify the options for resumed simulations in two ways. Users can either directly modify _input.par_ to adjust parameters before resuming or specify new parameters in `[options]` within the `petar` command mentioned earlier (for `-r`, `--r-ratio`, and `--r-bin`, always specify in `[options]`).  It is crucial to place `[options]` after `-p input.par` to prevent them from being overwritten by the parameters stored in _input.par_. For instance, to update the end time of the simulation to 10 after resuming simulations from the snapshot file `data.5`, use the following command:
 ```shell
 petar -p input.par -t 10 data.5 
 ```
@@ -1846,5 +1846,6 @@ Presently, PeTar has been integrated as a module within AMUSE, offering support 
 It is important to note that the stopping condition feature is currently under development and not yet operational. As a result, the merging of binaries and rapid stellar evolution events like supernova kicks are not supported at this time.
 
 The integration of PeTar into the AMUSE API opens up new avenues for conducting complex simulations that combine gravitational dynamics with other physical processes, paving the way for comprehensive studies of stellar systems within diverse astrophysical contexts.
+
 
 
