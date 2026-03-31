@@ -30,6 +30,9 @@ public:
     PS::F64 dm;
     PS::F64 time_record; 
     PS::F64 time_interrupt;
+#ifdef BHMERGER
+    PS::F64 time_merger=-1;//merger time=-1 when   by zhujie 
+#endif
 #ifdef BSE_BASE
     StarParameter star; // SSE/BSE based package stellar parameters
 #endif
@@ -65,6 +68,9 @@ public:
         dm = 0.0;
         time_record = 0.0;
         time_interrupt = 0.0;
+#ifdef BHMERGER
+
+#endif 
 #endif
     }
 
@@ -81,6 +87,9 @@ public:
         dm = 0.0;
         time_record = 0.0;
         time_interrupt = 0.0;
+#ifdef BHMERGER
+
+#endif
 #ifdef BSE_BASE
         star.initial(0.0);
 #endif
@@ -88,13 +97,19 @@ public:
     }
 
 #ifdef STELLAR_EVOLUTION
+
 #ifdef BSE_BASE
-    //! constructor 
+#ifdef BHMERGER
+
+
+#endif
+//! constructor 
     ParticleBase(const PS::F64 _mass, const PS::F64vec & _pos, const PS::F64vec & _vel, const PS::S64 _binary_state,
                  const PS::F64 _radius, const PS::F64 _dm, 
                  const PS::F64 _time_record, const PS::F64 _time_interrupt, const StarParameter& _star): 
         mass(_mass), pos(_pos), vel(_vel), binary_state(_binary_state), radius(_radius), dm(_dm), 
         time_record(_time_record), time_interrupt(_time_interrupt), star(_star) {}
+    
 #else
     //! constructor 
     ParticleBase(const PS::F64 _mass, const PS::F64vec & _pos, const PS::F64vec & _vel, const PS::S64 _binary_state,
