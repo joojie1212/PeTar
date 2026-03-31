@@ -351,7 +351,16 @@ AC_ARG_WITH([interrupt],
                     AX_CHECK_COMPILE_FLAG([-Wall],
                                           [FCFLAGS=$FCFLAGS" -Wall"])])],
 	    [with_interrupt=off])
-
+#black hole merger zhujie
+AC_ARG_ENABLE([bhmerger],
+              [AS_HELP_STRING([--enable-bhmerger],
+                              [enable black hole merger module])],
+              [use_bhmerger=yes],
+              [use_bhmerger=no])
+            
+AS_IF([test x"$use_bhmerger" != xno],
+      [OPTFLAGS=$OPTFLAGS" -DBHMERGER"
+       DEBFLAGS=$DEBFLAGS" -DBHMERGER"])
 # external potential
 AC_ARG_WITH([external],
 	    [AS_HELP_STRING([--with-external],
@@ -459,6 +468,9 @@ AC_SUBST([use_mpi])
 AC_SUBST([use_cuda])
 AC_SUBST([use_omp])
 AC_SUBST([use_gperf])
+#zhujie
+AC_SUBST([use_bhmerger])
+
 AC_SUBST([with_debug])
 AC_SUBST([with_step_mode])
 AC_SUBST([with_interrupt])
@@ -491,6 +503,7 @@ AC_SUBST([use_fdps_comm])
 AC_SUBST([FCLIBS])
 AC_SUBST([FLIBS])
 AC_SUBST([GALPY_VERSION])
+
 
 AC_MSG_NOTICE([----------------------Configure Summary--------------------])
 AC_MSG_NOTICE([--Features:])
