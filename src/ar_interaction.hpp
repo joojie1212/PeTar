@@ -1166,6 +1166,11 @@ public:
 
                     p2->radius = 0.0;
 
+#ifdef BHMERGER
+                    p1->time_merger=-1.0;
+                    p2->time_merger=-1.0;
+#endif
+
                     if (_bin_interrupt.status == AR::InterruptStatus::none) 
                         _bin_interrupt.status = AR::InterruptStatus::merge;
 
@@ -1244,6 +1249,79 @@ public:
 
 
 #ifdef BSE_BASE
+#ifdef BHMERGER
+                //BHmerger
+                if(p1->mass>0 && p2->mass>0&&p1->star.kw>=10&&p1->star.kw<15&&p2->star.kw>=10&&p2->star.kw<15){
+                    int binary_type_p1 = static_cast<int>(p1->getBinaryInterruptState());
+                    int binary_type_p2 = static_cast<int>(p2->getBinaryInterruptState());
+                    long long int pair_id1 = p1->getBinaryPairID();
+                    long long int pair_id2 = p2->getBinaryPairID();
+                    bool BHmerger_flag = false;
+                    bool BHmergersys_flag=true;
+                    if ((binary_type_p1 != binary_type_p2) || (pair_id1 != p2->id) || (pair_id2 != p1->id)) BHmergersys_flag = false;
+                    else if (bse_manager.isMassTransfer(binary_type_p1) 
+                                 || bse_manager.isMerger(binary_type_p1) 
+                                 || bse_manager.isNoRemnant(binary_type_p1) 
+                                 || bse_manager.isDisrupt(binary_type_p1)
+                                 || binary_type_p1 == 14)
+                            BHmergersys_flag = false;
+                    if(BHmergersys_flag)
+                    {
+                        Float semi = _bin.semi;
+                        if(semi>0){
+                            if((p1->time_merger < 0||p2->time_merger < 0)){//have mot calculated mergertime before and is a binary
+                            
+                                Float ecc  = _bin.ecc;
+                            
+                                Float m1 = p1->mass;
+                                Float m2 = p2->mass;
+                                Float period = _bin.period;
+                                Float speed_of_light=bse_manager.getSpeedOfLight();
+                                Float G_0=gravitational_constant;
+                                Float c2 = speed_of_light * speed_of_light;
+                                Float c5 = c2 * c2 * speed_of_light;
+
+                                Float one_minus_e2 = 1.0 - ecc*ecc;
+
+                                Float time_to_merge = (5.0/256.0)* c5 * pow(semi,4)/ (G_0*G_0*G_0 * m1*m2*(m1+m2)) * pow(one_minus_e2, 3.5)/(1.0 + 73.0/24.0*ecc*ecc + 37.0/96.0*pow(ecc,4));
+                                Float timestep=_bin_interrupt.time_end - _bin_interrupt.time_now;
+                                Float trigger_factor = 1;
+                                std::cout << "m = " << m1 << std::endl;
+                                std::cout << "c = " << speed_of_light << std::endl;
+                                std::cout << "G = " << gravitational_constant << std::endl;
+                                std::cout << "e = " << ecc << std::endl;
+                                std::cout << "timemerge  = " << time_to_merge << std::endl;
+                                std::cout << "period  = " << period << std::endl;
+                                if(time_to_merge < period * trigger_factor){
+                                    BHmerger_flag=true;
+                                }
+                                else{
+                                    p1->time_merger = _bin_interrupt.time_now + time_to_merge;
+                                    p2->time_merger = p1->time_merger;
+                                }
+                            }
+                            else{
+                                
+                                if((p1->time_merger < _bin_interrupt.time_now&&p2->time_merger < _bin_interrupt.time_now)){
+                                    BHmerger_flag=true;
+                                }
+                            } 
+                        }
+                    }
+#pragma omp critical
+{
+                    if (p1->mass > 0.0 && p2->mass > 0.0) {
+                        if(BHmerger_flag&&BHmergersys_flag){
+                            Float dr[3] = {p1->pos[0] - p2->pos[0], 
+                                                       p1->pos[1] - p2->pos[1], 
+                                                       p1->pos[2] - p2->pos[2]};
+                            Float dr2  = dr[0]*dr[0] + dr[1]*dr[1] + dr[2]*dr[2];
+                            merge(std::sqrt(dr2), 0.0, 1.0);
+                        }
+                    }
+}
+                }
+#endif 
                 // tide energy loss 
                 if (stellar_evolution_option==2 && p1->mass>0 && p2->mass>0) {
                     if (drdv<0) { // when two star approach each other; reset tide status

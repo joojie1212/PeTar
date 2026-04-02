@@ -31,7 +31,7 @@ public:
     PS::F64 time_record; 
     PS::F64 time_interrupt;
 #ifdef BHMERGER
-    PS::F64 time_merger=-1;//merger time=-1 when   by zhujie 
+    PS::F64 time_merger=-1.0;//merger time=-1  by zhujie 
 #endif
 #ifdef BSE_BASE
     StarParameter star; // SSE/BSE based package stellar parameters
